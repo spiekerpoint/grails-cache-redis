@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * Based on package-scope org.springframework.data.redis.cache.RedisCache.
@@ -111,6 +112,17 @@ public class GrailsRedisCache implements GrailsCache {
             }
         }, true);
     }
+
+	@Override
+	public <T> T get(final Object key, Callable<T> valueLoader) {
+		/*
+		 * FIXME: I had to add this method override in order to satisfy
+		 * the Spring Cache interface. It looks like this method signature
+		 * including the Callable parameter was added sometime after the
+		 * original cache-redis plugin was developed (?).
+		 */
+		return (T) this.get(key);
+	}
 
     @SuppressWarnings("unchecked")
     @Override
