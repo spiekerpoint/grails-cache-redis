@@ -35,7 +35,7 @@ class CacheRedisGrailsPlugin extends Plugin {
 
     def author = "Burt Beckwith"
     def authorEmail = "burt@burtbeckwith.com"
-    
+
     def profiles = ['web']
 
     String documentation = 'http://grails-plugins.github.io/grails-cache-redis/'
@@ -50,13 +50,14 @@ class CacheRedisGrailsPlugin extends Plugin {
 
     Closure doWithSpring() {
         {->
-            if (!enabled) {
+            def cacheConfig = grailsApplication.config.grails.cache
+            def redisCacheConfig = cacheConfig.redis
+			boolean pluginEnabled = (redisCacheConfig.enabled instanceof Boolean) ? redisCacheConfig.enabled : true
+            if (!pluginEnabled) {
                 log.warn 'Redis Cache plugin is disabled'
                 return
             }
 
-            def cacheConfig = grailsApplication.config.grails.cache
-            def redisCacheConfig = cacheConfig.redis
             int configDatabase = redisCacheConfig.database ?: 0
             boolean configUsePool = (redisCacheConfig.usePool instanceof Boolean) ? redisCacheConfig.usePool : true
             String configHostName = redisCacheConfig.hostName ?: 'localhost'
