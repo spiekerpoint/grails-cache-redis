@@ -126,14 +126,32 @@ class CacheRedisGrailsPlugin extends Plugin {
                 usePrefix = isUsePrefix
             }
 
-            grailsCacheFilter(RedisPageFragmentCachingFilter) {
-                cacheManager = ref('grailsCacheManager')
-                nativeCacheManager = ref('grailsCacheRedisTemplate')
-                // TODO this name might be brittle - perhaps do by type?
-                cacheOperationSource = ref('org.springframework.cache.annotation.AnnotationCacheOperationSource#0')
-                keyGenerator = ref('webCacheKeyGenerator')
-                expressionEvaluator = ref('webExpressionEvaluator')
-            }
+			/*
+			 * DOC - !!!!!!!!!!!
+			 * 
+			 * This is commented out because it introduces a bug causing NullPointerException for file upload, 
+			 * so we don't want to use the `RedisPageFragmentCachingFilter` implementation, but use the default one instead.
+			 * 
+			 * The bug is: when we do a file upload, we can get the file in the controler by `params.attachmentFile`.
+			 * That is how we code it in almost every place in DECK. However, when grails cache redis is enabled,
+			 * the `RedisPageFragmentCachingFilter` implementation would massage the request while doing its caching work,
+			 * but somehow missed the `attachmentFile`, and `params.attachmentFile` in a controller would be empty.
+			 * There is a work-around that we can get the file by calling `request.getMultipartFiles()`, but we have to
+			 * change it for every single place in DECK, which isn't ideal.
+			 * 
+			 * So this is the bug fix. Also this plugin version is based on an old version of grails-cache plugin - 3.0.3.
+			 * grails-cache 4.0 has a very different implementation and hopefully this is no longer an issue.
+			 * Will check it out when we upgrade to Grails 4.
+			 * 
+			 */
+//            grailsCacheFilter(RedisPageFragmentCachingFilter) {
+//                cacheManager = ref('grailsCacheManager')
+//                nativeCacheManager = ref('grailsCacheRedisTemplate')
+//                // TODO this name might be brittle - perhaps do by type?
+//                cacheOperationSource = ref('org.springframework.cache.annotation.AnnotationCacheOperationSource#0')
+//                keyGenerator = ref('webCacheKeyGenerator')
+//                expressionEvaluator = ref('webExpressionEvaluator')
+//            }
         }
     }
 
